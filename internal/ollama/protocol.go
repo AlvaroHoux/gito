@@ -1,7 +1,7 @@
 package ollama
 
 const (
-	OllamaURL = "https://localhost:11434/api/generate"
+	OllamaURL = "http://localhost:11434/api/generate"
 )
 
 type OllamaRequest struct {
