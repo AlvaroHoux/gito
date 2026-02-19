@@ -8,7 +8,7 @@ const (
 )
 
 func Warn(data ...any) {
-	printContent(WARN_COLOR, data)
+	printContent(WARN_COLOR, data...)
 }
 
 func Error(err error) {
@@ -16,7 +16,7 @@ func Error(err error) {
 }
 
 func Log(data ...any) {
-	printContent("", data)
+	printContent("", data...)
 }
 
 
