@@ -11,11 +11,10 @@ type GitoConfig struct {
 }
 
 func LoadConfig() (*GitoConfig, error) {
-	userConfigDir, err := os.UserConfigDir()
+	gitoPath, err := getPathConfig()
 	if err != nil {
-
+		return nil, err
 	}
-	gitoPath := filepath.Join(userConfigDir, "gito", "config.json")
 	gitoConfigData, err := os.ReadFile(gitoPath)
 
 	if err := os.IsNotExist(err); err == true {
@@ -31,6 +30,31 @@ func LoadConfig() (*GitoConfig, error) {
 		return nil, err
 	}
 	return &gitoCofig, nil
+}
+
+func SaveConfig(model string) error {
+	gitoPath, err := getPathConfig()
+	if err != nil {
+		return err
+	}
+
+	configData, err := json.Marshal(GitoConfig{Model: model})
+	if err != nil {
+		return nil
+	}
+
+	if err := os.WriteFile(gitoPath, []byte(configData), 0644); err != nil {
+		return err
+	}
+	return nil
+}
+
+func getPathConfig() (string, error) {
+	userConfigDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(userConfigDir, "gito", "config.json"), nil
 }
 
 func createConfig(path string) (*GitoConfig, error) {

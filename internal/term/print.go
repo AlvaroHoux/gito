@@ -25,5 +25,5 @@ func printContent(color string, data ...any) {
 	for i := range data {
 		fmt.Print(data[i], " ")
 	}
-	fmt.Print("\x1b[39m\n")
+	fmt.Print("\033[0m\n")
 }
