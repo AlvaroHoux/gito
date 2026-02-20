@@ -17,7 +17,7 @@ Gito acts as a bridge between your code and AI. It natively integrates with [Oll
 Ensure you have [Go](https://go.dev/) installed on your machine.
 
 ```bash
-go install https://github.com/AlvaroHoux/gito/cmd/gito@latest
+go install github.com/AlvaroHoux/gito/cmd/gito@latest
 ```
 
 Make sure your Go bin directory is in your system's $PATH.
@@ -58,12 +58,28 @@ You can set a default model so you don't have to specify it every time. Gito sav
 gito config -m granite3.3:2b
 ```
 
+### 📝 The Prompt & Customization
+
+Gito comes with a carefully crafted, built-in system prompt (you can check it out in the [`prompt.txt`](./prompt.txt) file in this repository). If you prefer using a web interface, you can also use this exact prompt via our **[Official Gito GEM](https://gemini.google.com/gem/1qXqsxUgAovbu6QgAOtAzQcMCqcmwMLnc?usp=sharing)**.
+
+However, if you want to enforce specific rules for your team locally (e.g., "always use emojis", "write in Portuguese", or "reference Jira tickets"), you can easily override the default prompt.
+
+Simply create a `prompt.txt` file in Gito's configuration directory:
+
+- **Linux:** `~/.config/gito/prompt.txt`
+- **Windows:** `%APPDATA%\gito\prompt.txt`
+- **macOS:** `~/Library/Application Support/gito/prompt.txt`
+
+If this file exists, Gito will automatically use its contents instead of the default prompt!
+
 ## 🧠 How the Fallback Works
 
-If you run gito and the Ollama server is not active, the CLI won't crash. Instead, it captures your `git diff --staged`, prepends it with a specialized System Prompt, and copies the entire block to your clipboard.
+If you run `gito` and the Ollama server is **not** active, the CLI won't crash. Instead, it captures your `git diff --staged` and copies the entire block to your clipboard. 
 
-You will see: `🐙 Gito: Copied to clipboard!`.
-Just Ctrl+V into your favorite web AI, and it will give you the perfect commit message.
+You will see: `🐙 Gito: Copied to clipboard!`. 
+Just `Ctrl+V` into your favorite web AI, and it will give you the perfect commit message.
+
+✨ **For Gemini Users:** We have an official **[Gito GEM](https://gemini.google.com/gem/1qXqsxUgAovbu6QgAOtAzQcMCqcmwMLnc?usp=sharing)** pre-configured with our exact system prompt. If you are using the fallback, just open the GEM and paste your diff there!
 
 ---
 
