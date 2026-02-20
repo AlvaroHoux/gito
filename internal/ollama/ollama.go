@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
 const SystemPrompt = `You are an assistant specialized in generating commit messages following the Conventional Commits standard.
@@ -99,8 +101,27 @@ func IsOllamaRunning() bool {
 	return resp.StatusCode == 200
 }
 
+func getSystemPrompt() (string, error) {
+	userConfigDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	promptPath := filepath.Join(userConfigDir, "gito", "prompt.txt")
+	content, err := os.ReadFile(promptPath)
+	if err == nil && len(content) > 0 {
+		return string(content), err
+	}
+	return "", fmt.Errorf("Cannot find prompt.txt in gito directory")
+}
+
 func Generate(model string, diff string) (string, error) {
-	fullPrompt := SystemPrompt + "\n" + diff
+	prompt := SystemPrompt
+	userPrompt, err := getSystemPrompt()
+	if err == nil {
+		prompt = userPrompt
+	}
+
+	fullPrompt := prompt + "\n" + diff
 
 	reqBody := OllamaRequest{
 		Model:  model,
