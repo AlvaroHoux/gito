@@ -131,3 +131,22 @@ func Generate(model string, diff string) (string, error) {
 	
 	return ollamaResp.Response, nil
 }
+
+func CheckModelExists(model string) (bool, error) {
+	reqBody := map[string]string{"name": model}
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return false, err
+	}
+
+	resp, err := http.Post("http://localhost:11434/api/show", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		return true, nil
+	}
+	return false, nil
+}
