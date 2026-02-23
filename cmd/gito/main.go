@@ -7,11 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"orbit/internal/clipboard"
-	"orbit/internal/config"
-	"orbit/internal/git"
-	"orbit/internal/ollama"
-	"orbit/internal/term"
+	"gito/internal/clipboard"
+	"gito/internal/config"
+	"gito/internal/git"
+	"gito/internal/ollama"
+	"gito/internal/term"
 )
 
 func askConfirmation() (bool, error) {
