@@ -7,11 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"gito/internal/clipboard"
-	"gito/internal/config"
-	"gito/internal/git"
-	"gito/internal/ollama"
-	"gito/internal/term"
+	"github.com/AlvaroHoux/gito/internal/clipboard"
+	"github.com/AlvaroHoux/gito/internal/config"
+	"github.com/AlvaroHoux/gito/internal/git"
+	"github.com/AlvaroHoux/gito/internal/ollama"
+	"github.com/AlvaroHoux/gito/internal/term"
 )
 
 func askConfirmation() (bool, error) {
