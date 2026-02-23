@@ -50,13 +50,26 @@ gito -y
 gito -m llama3
 ```
 
+**Copy Diff Only**: Quickly copy the staged diff to your clipboard without any AI prompts, working universally across OSes.
+```bash
+gito -d
+```
+
 ### Configuration
 
-You can set a default model so you don't have to specify it every time. Gito saves this safely in your OS's native config directory (`~/.config/gito/config.json` on Linux).
+You can set a default model, or configure Gito to always skip prompts (`-y`) or only copy diffs (`-d`). Gito saves this safely in your OS's native config directory (`~/.config/gito/config.json` on Linux).
 
 ```bash
-gito config -m granite3.3:2b
+gito config -m granite3.3:2b -y
 ```
+
+**Note**: To disable a boolean setting later, you must use the `=` sign:
+
+```bash
+gito config -y=false -d=false
+```
+
+Run `gito config` without any flags to see your current setup!
 
 ### 📝 The Prompt & Customization
 
