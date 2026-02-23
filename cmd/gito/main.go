@@ -35,40 +35,57 @@ func askConfirmation() (bool, error) {
 }
 
 func main() {
-	var runModel string
-	var ignoreAsk bool
-
-	flag.StringVar(&runModel, "m", "", "Ollama model name (shorthand)")
-	flag.StringVar(&runModel, "model", "", "Ollama model name")
-	flag.BoolVar(&ignoreAsk, "y", false, "Ignore asks")
-
-	configCmd := flag.NewFlagSet("config", flag.ExitOnError)
-	var configModel string
-
-	configCmd.StringVar(&configModel, "m", "", "Model name to save (shorthand)")
-	configCmd.StringVar(&configModel, "model", "", "Model name to save")
-
-	flag.Parse()
-
 	configData, err := config.LoadConfig()
 	if err != nil {
 		term.Error(err)
 		return
 	}
 
-	if runModel == "" {
-		runModel = configData.Model
-	}
+	var runModel string
+	var ignoreAsk bool
+	var onlyDiff bool
+
+	flag.StringVar(&runModel, "m", configData.Model, "Ollama model name (shorthand)")
+	flag.StringVar(&runModel, "model", configData.Model, "Ollama model name")
+	flag.BoolVar(&ignoreAsk, "y", configData.SkipAsk, "Ignore asks")
+	flag.BoolVar(&onlyDiff, "d", configData.OnlyDiff, "Copy only the staged diff to clipboard (shorthand)")
+	flag.BoolVar(&onlyDiff, "diff", configData.OnlyDiff, "Copy only the staged diff to clipboard")
+
+
+	configCmd := flag.NewFlagSet("config", flag.ExitOnError)
+	var configModel string
+	var configIgnoreAsk bool
+	var configOnlyDiff bool
+
+	configCmd.StringVar(&configModel, "m", configData.Model, "Model name to save (shorthand)")
+	configCmd.StringVar(&configModel, "model", configData.Model, "Model name to save")
+	configCmd.BoolVar(&configIgnoreAsk, "y", configData.SkipAsk, "Always ignore asks")
+	configCmd.BoolVar(&configOnlyDiff, "d", configData.OnlyDiff, "Always copy only the staged diff to clipboard (shorthand)")
+	configCmd.BoolVar(&configOnlyDiff, "diff", configData.OnlyDiff, "Always Ccpy only the staged diff to clipboard")
+
+	flag.Parse()
 
 	if len(os.Args) > 1 && os.Args[1] == "config" {
-		configCmd.Parse(os.Args[2:])
-
-		if configModel == "" {
-			term.Warning("Usage: gito config -m <model>")
+		if len(os.Args) == 2 {
+			term.Log("Current configuration:")
+		
+			fmt.Printf("  - Model:      \033[1;36m%s\033[0m\n", configData.Model)
+			fmt.Printf("  - Skip Ask:   \033[1;36m%v\033[0m\n", configData.SkipAsk)
+			fmt.Printf("  - Only Diff:  \033[1;36m%v\033[0m\n\n", configData.OnlyDiff)
+			
+			fmt.Println("Run 'gito config -h' to see how to change these values.")
 			return
 		}
 
-		if err := config.SaveConfig(configModel); err != nil {
+		configCmd.Parse(os.Args[2:])
+
+		newConfig := config.GitoConfig{
+			Model: configModel,
+			SkipAsk: configIgnoreAsk,
+			OnlyDiff: configOnlyDiff,
+		}
+
+		if err := config.SaveConfig(newConfig); err != nil {
 			term.Error(err)
 			return
 		}
@@ -134,10 +151,22 @@ func main() {
 
 	} else {
 		term.Warning("Ollama is not running, use ollama serve in terminal")
-		if err := clipboard.CopyToClipboard(diffOut); err != nil {
+
+		var fallbackText string
+		var fallbackMsg string
+		
+		if onlyDiff {
+			fallbackMsg = "Diff"
+			fallbackText = diffOut	
+		} else {
+			fallbackMsg = "Prompt + Diff"
+			fallbackText = ollama.GetSystemPrompt() + "\n\nDiff:\n" + diffOut
+		}
+
+		if err := clipboard.CopyToClipboard(fallbackText); err != nil {
 			term.Error(err)
 			return
 		}
-		term.Success("Copied to clipboard!")
+		term.Success(fallbackMsg, "copied to clipboard!")
 	}
 }

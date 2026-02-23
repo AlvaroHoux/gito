@@ -8,6 +8,8 @@ import (
 
 type GitoConfig struct {
 	Model string `json:"model"`
+	SkipAsk bool `json:"skipAsk"`
+	OnlyDiff bool `json:"onlyDiff"`
 }
 
 func LoadConfig() (*GitoConfig, error) {
@@ -32,13 +34,13 @@ func LoadConfig() (*GitoConfig, error) {
 	return &gitoCofig, nil
 }
 
-func SaveConfig(model string) error {
+func SaveConfig(newConfig GitoConfig) error {
 	gitoPath, err := getPathConfig()
 	if err != nil {
 		return err
 	}
 
-	configData, err := json.Marshal(GitoConfig{Model: model})
+	configData, err := json.Marshal(newConfig)
 	if err != nil {
 		return nil
 	}
@@ -64,6 +66,8 @@ func createConfig(path string) (*GitoConfig, error) {
 
 	defaultConfig := GitoConfig{
 		Model: "granite3.3:2b",
+		SkipAsk: false,
+		OnlyDiff: false,
 	}
 
 	defaultConfigData, err := json.Marshal(defaultConfig)

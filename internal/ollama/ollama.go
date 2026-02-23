@@ -101,26 +101,21 @@ func IsOllamaRunning() bool {
 	return resp.StatusCode == 200
 }
 
-func getSystemPrompt() (string, error) {
+func GetSystemPrompt() string {
 	userConfigDir, err := os.UserConfigDir()
 	if err != nil {
-		return "", err
+		return SystemPrompt
 	}
 	promptPath := filepath.Join(userConfigDir, "gito", "prompt.txt")
 	content, err := os.ReadFile(promptPath)
 	if err == nil && len(content) > 0 {
-		return string(content), err
+		return string(content)
 	}
-	return "", fmt.Errorf("Cannot find prompt.txt in gito directory")
+	return SystemPrompt
 }
 
 func Generate(model string, diff string) (string, error) {
-	prompt := SystemPrompt
-	userPrompt, err := getSystemPrompt()
-	if err == nil {
-		prompt = userPrompt
-	}
-
+	prompt := GetSystemPrompt()
 	fullPrompt := prompt + "\n" + diff
 
 	reqBody := OllamaRequest{
